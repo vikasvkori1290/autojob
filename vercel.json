@@ -12,10 +12,6 @@
     {
       "source": "/openapi.json",
       "destination": "/api/index.py"
-    },
-    {
-      "source": "/",
-      "destination": "/public/index.html"
     }
   ]
 }
