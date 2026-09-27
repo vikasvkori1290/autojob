@@ -49,6 +49,12 @@ from job_scraper.sources import Listing
 _REPO_ROOT = Path(__file__).resolve().parents[1]
 _DEFAULT_SEEN = _REPO_ROOT / "job_scraper" / "seen_jobs.json"
 
+if os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"):
+    import tempfile
+    _TMP_BASE = Path(tempfile.gettempdir()) / "autojobapply"
+    _TMP_BASE.mkdir(parents=True, exist_ok=True)
+    _DEFAULT_SEEN = _TMP_BASE / "seen_jobs.json"
+
 # ---------------------------------------------------------------------------
 # Corporate suffix stripping (order matters — longer first)
 # ---------------------------------------------------------------------------

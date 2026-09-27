@@ -36,6 +36,18 @@ _SEEN_PATH = _REPO_ROOT / "job_scraper" / "seen_jobs.json"
 _ENV_PATH = _REPO_ROOT / ".env"
 _DOCUMENTS_CV = _REPO_ROOT / "documents" / "cv"
 
+# Cloud/Serverless environment fallback (e.g. Vercel where repo root is read-only)
+if os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"):
+    import tempfile
+    _TMP_BASE = Path(tempfile.gettempdir()) / "autojobapply"
+    _TMP_BASE.mkdir(parents=True, exist_ok=True)
+    _RESULTS_DIR = _TMP_BASE / "results"
+    _RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    _DOCUMENTS_CV = _TMP_BASE / "cv"
+    _DOCUMENTS_CV.mkdir(parents=True, exist_ok=True)
+    _PROFILE_PATH = _TMP_BASE / "profile.json"
+    _SEEN_PATH = _TMP_BASE / "seen_jobs.json"
+
 DEFAULT_PORT = 4000
 
 # ---------------------------------------------------------------------------

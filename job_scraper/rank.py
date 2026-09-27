@@ -70,6 +70,14 @@ class ScoredListing(Listing, total=False):
 
 _CONFIG_PATH = _REPO_ROOT / "job_scraper" / "config.json"
 
+if os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"):
+    import tempfile
+    _TMP_BASE = Path(tempfile.gettempdir()) / "autojobapply"
+    _TMP_BASE.mkdir(parents=True, exist_ok=True)
+    _RESULTS_DIR = _TMP_BASE / "results"
+    _RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    _CONFIG_PATH = _TMP_BASE / "config.json"
+
 DEFAULT_CONFIG = {
     "location": "Bangalore, India",
     "language": "English",

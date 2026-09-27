@@ -36,6 +36,14 @@ _DEFAULT_CV_DIR = _REPO_ROOT / "documents" / "cv"
 _DEFAULT_LINKEDIN_DIR = _REPO_ROOT / "documents" / "linkedin"
 _DEFAULT_OUTPUT = _REPO_ROOT / "job_scraper" / "profile.json"
 
+if os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"):
+    import tempfile
+    _TMP_BASE = Path(tempfile.gettempdir()) / "autojobapply"
+    _TMP_BASE.mkdir(parents=True, exist_ok=True)
+    _DEFAULT_CV_DIR = _TMP_BASE / "cv"
+    _DEFAULT_CV_DIR.mkdir(parents=True, exist_ok=True)
+    _DEFAULT_OUTPUT = _TMP_BASE / "profile.json"
+
 # Source file extensions the ingestion pipeline can read.
 _SUPPORTED_EXTENSIONS = {".pdf", ".tex", ".txt", ".md"}
 
