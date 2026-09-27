@@ -24,5 +24,5 @@ ENV HEADLESS=1
 
 EXPOSE 4000
 
-# Start GUI server
-CMD ["python", "-m", "job_scraper.gui", "--port", "4000", "--no-browser"]
+# Start GUI server (respects Render's dynamic $PORT)
+CMD ["python", "-m", "job_scraper.gui", "--no-browser"]
