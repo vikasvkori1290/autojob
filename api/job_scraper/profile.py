@@ -19,6 +19,7 @@ Public API (everything Phase 3+ should import)::
 
 import json
 import os
+import re
 import tempfile
 from pathlib import Path
 
@@ -72,6 +73,7 @@ The JSON object must have exactly these keys:
   "seniority"        – string; one of: "junior", "mid", "senior", "lead", "principal", "unknown"
   "summary"          – string; 2–3 sentence professional summary
 
+CRITICAL: All strings must be valid escaped JSON. NEVER use unescaped double quotes inside string values; use single quotes instead (e.g. 'DSA Patterns Guide', not "DSA Patterns Guide").
 Return only the JSON object. Do not include any other text."""
 
 
@@ -154,8 +156,15 @@ def _parse_llm_response(response: str) -> dict:
     try:
         data = json.loads(candidate)
     except json.JSONDecodeError:
-        # Attempt repair for truncated LLM responses (e.g. cut off summary string)
         repaired = candidate.strip()
+        # Sanitize unescaped inner double quotes in summary: "summary": "..."
+        match = re.search(r'("summary"\s*:\s*")(.*)("\s*\}\s*$)', repaired, re.DOTALL)
+        if match:
+            prefix, summary_body, suffix = match.group(1), match.group(2), match.group(3)
+            cleaned_summary = re.sub(r'(?<!\\)"', "'", summary_body)
+            repaired = repaired[:match.start()] + prefix + cleaned_summary + suffix
+
+        # Attempt repair for truncated LLM responses (e.g. cut off summary string)
         if repaired.count('"') % 2 != 0:
             repaired += '"'
         if not repaired.endswith("}"):
