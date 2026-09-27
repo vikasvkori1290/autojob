@@ -2,9 +2,12 @@ import sys
 import traceback
 from pathlib import Path
 
-_ROOT = Path(__file__).resolve().parent.parent
-if str(_ROOT) not in sys.path:
-    sys.path.insert(0, str(_ROOT))
+# Add api directory to sys.path so api/job_scraper is discoverable immediately
+_API_DIR = Path(__file__).resolve().parent
+_ROOT = _API_DIR.parent
+for p in (_API_DIR, _ROOT):
+    if str(p) not in sys.path:
+        sys.path.insert(0, str(p))
 
 try:
     from job_scraper.gui.server import app
