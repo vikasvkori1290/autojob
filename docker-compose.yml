@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  autojobapply:
+    build: .
+    container_name: autojobapply
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    env_file:
+      - .env
+    environment:
+      - HOST=0.0.0.0
+      - PORT=4000
+      - HEADLESS=1
+    volumes:
+      - ./job_scraper/results:/app/job_scraper/results
+      - ./documents/cv:/app/documents/cv

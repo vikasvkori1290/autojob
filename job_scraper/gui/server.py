@@ -460,12 +460,16 @@ def reset_seen():
 
 def serve(port: int = DEFAULT_PORT, *, open_browser: bool = True) -> None:
     """Start the FastAPI server via uvicorn. Blocks until stopped."""
-    url = f"http://localhost:{port}"
+    env_port = int(os.getenv("PORT", str(port)))
+    host = os.getenv("HOST", "127.0.0.1")
+    is_headless = os.getenv("HEADLESS") == "1" or host == "0.0.0.0" or os.getenv("RENDER") or os.getenv("RAILWAY_STATIC_URL")
+    
+    url = f"http://{'localhost' if host == '0.0.0.0' else host}:{env_port}"
     print(f"AutoJobApply GUI -> {url}")
     print("Press Ctrl-C to stop.\n")
-    if open_browser:
+    if open_browser and not is_headless:
         threading.Timer(0.5, webbrowser.open, args=[url]).start()
-    uvicorn.run(app, host="127.0.0.1", port=port, log_level="info")
+    uvicorn.run(app, host=host, port=env_port, log_level="info")
 
 
 def _force_utf8_output() -> None:
