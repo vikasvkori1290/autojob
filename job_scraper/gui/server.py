@@ -205,19 +205,23 @@ def _run_pipeline(
 
 
 def _update_env_file(key: str, value: str) -> None:
-    """Set or update key=value in .env file securely."""
-    lines = []
-    found = False
-    if _ENV_PATH.is_file():
-        for line in _ENV_PATH.read_text(encoding="utf-8").splitlines():
-            if line.strip().startswith(f"{key}=") or line.strip().startswith(f"export {key}="):
-                lines.append(f"{key}={value}")
-                found = True
-            else:
-                lines.append(line)
-    if not found:
-        lines.append(f"{key}={value}")
-    _ENV_PATH.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    """Set or update key=value in .env file securely (if filesystem is writable)."""
+    try:
+        lines = []
+        found = False
+        if _ENV_PATH.is_file():
+            for line in _ENV_PATH.read_text(encoding="utf-8").splitlines():
+                if line.strip().startswith(f"{key}=") or line.strip().startswith(f"export {key}="):
+                    lines.append(f"{key}={value}")
+                    found = True
+                else:
+                    lines.append(line)
+        if not found:
+            lines.append(f"{key}={value}")
+        _ENV_PATH.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    except OSError:
+        # Graceful fallback for read-only cloud environments (e.g. Vercel serverless)
+        pass
 
 
 # ---------------------------------------------------------------------------

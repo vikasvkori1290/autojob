@@ -1,10 +1,51 @@
 # AutoJobApply Deployment Guide
 
 This guide explains how to deploy the **AutoJobApply** AI job search, scraping, and fit ranking platform across different environments:
-1. [Free Cloud Hosting (Render)](#1-free-cloud-hosting-render) — *Easiest for a permanent public link*
-2. [Railway Cloud Deployment](#2-railway-cloud-deployment)
-3. [Docker Container (Self-Hosted / VPS / AWS EC2)](#3-docker-container-deployment)
-4. [Instant Mobile Access (Cloudflare Tunnel)](#4-instant-mobile--remote-access-cloudflare-tunnel)
+1. [Vercel Serverless Deployment](#1-vercel-deployment) — *Fastest 1-click cloud deployment*
+2. [Free Cloud Hosting (Render)](#2-free-cloud-hosting-render) — *Best for long background scrapes*
+3. [Railway Cloud Deployment](#3-railway-cloud-deployment)
+4. [Docker Container (Self-Hosted / VPS / AWS EC2)](#4-docker-container-deployment)
+5. [Instant Mobile Access (Cloudflare Tunnel)](#5-instant-mobile--remote-access-cloudflare-tunnel)
+
+---
+
+## 1. Vercel Deployment
+
+The project includes pre-configured [vercel.json](file:///c:/devoloper/AutoJobApply/vercel.json) and [api/index.py](file:///c:/devoloper/AutoJobApply/api/index.py) serverless entry points.
+
+### Step 1: Push Code to GitHub
+```bash
+git add .
+git commit -m "Add Vercel deployment configuration"
+git push origin main
+```
+
+### Step 2: Import into Vercel
+1. Log in to **[Vercel.com](https://vercel.com/)** using your GitHub account.
+2. Click **"Add New..."** &rarr; **"Project"**.
+3. Under **Import Git Repository**, find your `AutoJobApply` repo and click **Import**.
+
+### Step 3: Configure Project Settings
+- **Framework Preset:** Leave as `Other`.
+- **Root Directory:** `./` (default).
+- **Build and Output Settings:** Leave defaults (Vercel automatically detects `requirements.txt` and `api/index.py`).
+
+### Step 4: Add Environment Variables
+Under the **Environment Variables** collapsible section, add:
+| Key | Value |
+| :--- | :--- |
+| `NVIDIA_API_KEY` | *(your NVIDIA NIM API key)* |
+| `HEADLESS` | `1` |
+
+*(Optional: If using Google Gemini, add `GEMINI_API_KEY` as well)*.
+
+### Step 5: Deploy
+Click **Deploy**.
+Vercel will install the Python dependencies and launch your application at a URL like:
+`https://autojobapply.vercel.app`
+
+> **Note on Vercel Serverless Limits:**
+> Vercel's free tier has a 10-15 second timeout per serverless request. Live searches on Internshala or quick LinkedIn checks will run smoothly. For very deep scrapes with 100+ jobs, Render or Docker (Options 2 & 4) is recommended as they run continuous long-running background tasks.
 
 ---
 
@@ -22,7 +63,7 @@ Before deploying, ensure you have your environment variables ready:
 
 ---
 
-## 1. Free Cloud Hosting (Render)
+## 2. Free Cloud Hosting (Render)
 
 [Render.com](https://render.com) offers a free tier suitable for running Python web services.
 
@@ -64,7 +105,7 @@ Click **Create Web Service**. Render will automatically build the environment an
 
 ---
 
-## 2. Railway Cloud Deployment
+## 3. Railway Cloud Deployment
 
 [Railway.app](https://railway.app/) can automatically detect the included `Dockerfile`.
 
@@ -81,7 +122,7 @@ Click **Create Web Service**. Render will automatically build the environment an
 
 ---
 
-## 3. Docker Container Deployment
+## 4. Docker Container Deployment
 
 If you are running on your own VPS (Ubuntu/Debian), DigitalOcean droplet, or AWS EC2 instance:
 
@@ -122,7 +163,7 @@ docker run -d \
 
 ---
 
-## 4. Instant Mobile / Remote Access (Cloudflare Tunnel)
+## 5. Instant Mobile / Remote Access (Cloudflare Tunnel)
 
 If you already run the application locally on your laptop (`npm run gui`) and simply want to open the dashboard on your phone or share it with a friend **without deploying to the cloud**:
 

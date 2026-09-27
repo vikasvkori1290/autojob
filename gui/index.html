@@ -1654,6 +1654,16 @@ async function loadSettings() {
       settingsBadge.className = "badge badge-green";
       settingsBadge.innerHTML = `<span class="status-dot"></span>Configured ✓`;
     } else {
+      const savedKey = localStorage.getItem("autojobapply_nvidia_key");
+      if (savedKey) {
+        // Auto-hydrate the server process seamlessly
+        fetchJSON("/api/settings/api-key", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ api_key: savedKey })
+        }).then(() => loadSettings()).catch(() => {});
+        return;
+      }
       keyBadge.className = "badge badge-red";
       keyBadge.innerHTML = `<span class="status-dot"></span>NVIDIA NIM: Not Set`;
       settingsBadge.className = "badge badge-red";
@@ -1695,6 +1705,7 @@ async function saveApiKey() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ api_key: key })
     });
+    try { localStorage.setItem("autojobapply_nvidia_key", key); } catch(e){}
     fb.className = "feedback success";
     fb.textContent = "NVIDIA API key validated & saved!";
     document.getElementById("inp-api-key").value = "";
