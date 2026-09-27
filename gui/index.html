@@ -1667,6 +1667,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadProfile();
   loadLatestResults();
   loadSeenCount();
+  checkActiveScrape();
 });
 
 // ── 1. Settings & Rubric ────────────────────────────────────────────────────
@@ -2002,9 +2003,27 @@ async function startScrape() {
     });
     startPolling();
   } catch (err) {
-    termBody.innerHTML += `<span class="log-line log-error">Error: ${escHtml(err.message)}</span>`;
-    btn.disabled = false;
+    if (err.message && err.message.toLowerCase().includes("already running")) {
+      termBody.innerHTML += `<span class="log-line" style="color:var(--primary);">⚡ Discovery pipeline is already active — streaming live progress…</span>`;
+      startPolling();
+    } else {
+      termBody.innerHTML += `<span class="log-line log-error">Error: ${escHtml(err.message)}</span>`;
+      btn.disabled = false;
+    }
   }
+}
+
+async function checkActiveScrape() {
+  try {
+    const st = await fetchJSON("/api/scrape/status");
+    if (st && st.status === "running") {
+      const term = document.getElementById("terminal-box");
+      const btn = document.getElementById("btn-run-scrape");
+      if (term) term.style.display = "block";
+      if (btn) btn.disabled = true;
+      startPolling();
+    }
+  } catch (_) {}
 }
 
 function startPolling() {
