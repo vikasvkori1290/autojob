@@ -6,6 +6,8 @@ bun.lock
 __pycache__/
 *.pyc
 *.pyo
+.pytest_cache/
+.bob/
 .venv/
 venv/
 
@@ -25,6 +27,11 @@ salary_data.json
 # its own directory, so these land at .claude/skills/job-scraper/job_scraper/*.
 # A rooted `job_scraper/...` pattern silently fails to match them.
 **/job_scraper/seen_jobs.json
+job_scraper/seen_jobs.json
+**/job_scraper/profile.json
+job_scraper/profile.json
+**/job_scraper/config.json
+job_scraper/config.json
 **/job_scraper/notion_sync.json
 **/job_scraper/*.md
 *_BehavioralReport.pdf
@@ -118,3 +125,6 @@ company_research/*.json
 
 # Brainstorm mockups (superpowers visual companion) - never ship
 .superpowers/
+
+# Ranked results output (personal, timestamped per run)
+**/job_scraper/results/*.json

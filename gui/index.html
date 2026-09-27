@@ -1,0 +1,1830 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoJobApply — AI Job Assistant & Fit Ranker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* ── 1. DARK THEME VARIABLES (Default) ────────────────────────── */
+  :root, [data-theme="dark"] {
+    --bg-dark: #0f1013;
+    --bg-image: 
+      radial-gradient(circle at 12% 16%, rgba(245, 158, 11, 0.08) 0%, transparent 42%),
+      radial-gradient(circle at 88% 22%, rgba(217, 119, 6, 0.06) 0%, transparent 45%),
+      radial-gradient(circle at 50% 90%, rgba(180, 83, 9, 0.04) 0%, transparent 55%);
+    --surface-glass: rgba(24, 25, 31, 0.85);
+    --surface-glass-card: rgba(27, 28, 35, 0.9);
+    --surface-elevated: rgba(38, 40, 50, 0.75);
+    --surface-hover: rgba(50, 52, 65, 0.6);
+    --border-glass: rgba(255, 255, 255, 0.07);
+    --border-light: rgba(245, 158, 11, 0.25);
+    --border-focus: #f59e0b;
+    --text-primary: #fdfdfd;
+    --text-secondary: #a1a1aa;
+    --text-muted: #71717a;
+    --primary: #f59e0b;
+    --primary-light: #fbbf24;
+    --primary-glow: rgba(245, 158, 11, 0.35);
+    --brand-grad: linear-gradient(135deg, #f59e0b 0%, #b45309 100%);
+    --brand-text: #0f1013;
+    --title-grad: linear-gradient(120deg, #ffffff 0%, #f4f4f5 50%, #d4d4d8 100%);
+    --btn-primary-bg: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    --btn-primary-text: #0f1013;
+    --btn-hover-bg: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    --tab-active-bg: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    --tab-active-text: #0f1013;
+    --input-bg: rgba(18, 19, 24, 0.85);
+    --input-focus-bg: rgba(18, 19, 24, 0.98);
+    --table-header-bg: rgba(20, 21, 27, 0.98);
+    --table-row-hover: rgba(245, 158, 11, 0.05);
+    --table-detail-bg: rgba(14, 15, 19, 0.98);
+    --panel-border-accent: #f59e0b;
+    --card-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    --header-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    --terminal-bg: #090a0d;
+    --terminal-text: #e4e4e7;
+    --terminal-border: rgba(245, 158, 11, 0.18);
+    --dropzone-bg: rgba(22, 23, 29, 0.5);
+    --dropzone-border: rgba(245, 158, 11, 0.35);
+    --dropzone-icon: #f59e0b;
+    --tag-bg: rgba(255, 255, 255, 0.05);
+    --tag-text: #e4e4e7;
+    --tag-accent-bg: rgba(245, 158, 11, 0.14);
+    --tag-accent-border: rgba(245, 158, 11, 0.35);
+    --tag-accent-text: #fde68a;
+    --green-bg: rgba(16, 185, 129, 0.12);
+    --green-text: #34d399;
+    --amber-bg: rgba(245, 158, 11, 0.14);
+    --amber-text: #fbbf24;
+    --red-bg: rgba(244, 63, 94, 0.12);
+    --red-text: #fb7185;
+    --badge-gray-bg: rgba(255, 255, 255, 0.05);
+    --badge-gray-text: var(--text-secondary);
+    --badge-internshala-bg: rgba(45, 212, 191, 0.14);
+    --badge-internshala-text: #2dd4bf;
+    --badge-internshala-border: rgba(45, 212, 191, 0.35);
+    --badge-linkedin-bg: rgba(245, 158, 11, 0.14);
+    --badge-linkedin-text: #fbbf24;
+    --badge-linkedin-border: rgba(245, 158, 11, 0.35);
+    --score-high-bg: linear-gradient(135deg, rgba(16, 185, 129, 0.22) 0%, rgba(5, 150, 105, 0.22) 100%);
+    --score-high-text: #34d399;
+    --score-high-border: rgba(16, 185, 129, 0.5);
+    --score-mid-bg: linear-gradient(135deg, rgba(245, 158, 11, 0.22) 0%, rgba(217, 119, 6, 0.22) 100%);
+    --score-mid-text: #fbbf24;
+    --score-mid-border: rgba(245, 158, 11, 0.5);
+    --score-low-bg: linear-gradient(135deg, rgba(217, 119, 6, 0.18) 0%, rgba(180, 83, 9, 0.18) 100%);
+    --score-low-text: #fcd34d;
+    --score-low-border: rgba(217, 119, 6, 0.4);
+    --score-poor-bg: linear-gradient(135deg, rgba(244, 63, 94, 0.18) 0%, rgba(190, 18, 60, 0.18) 100%);
+    --score-poor-text: #fb7185;
+    --score-poor-border: rgba(244, 63, 94, 0.4);
+  }
+
+  /* ── 2. LIGHT THEME OVERRIDES (Mustard Yellow) ───────────────── */
+  [data-theme="light"] {
+    --bg-dark: #fafaf9;
+    --bg-image: 
+      radial-gradient(circle at 10% 12%, rgba(202, 138, 4, 0.07) 0%, transparent 42%),
+      radial-gradient(circle at 90% 18%, rgba(234, 179, 8, 0.05) 0%, transparent 45%),
+      radial-gradient(circle at 50% 90%, rgba(161, 98, 7, 0.03) 0%, transparent 55%);
+    --surface-glass: rgba(255, 255, 255, 0.94);
+    --surface-glass-card: #ffffff;
+    --surface-elevated: #f5f5f4;
+    --surface-hover: #e7e5e4;
+    --border-glass: rgba(0, 0, 0, 0.08);
+    --border-light: rgba(202, 138, 4, 0.35);
+    --border-focus: #ca8a04;
+    --text-primary: #1c1917;
+    --text-secondary: #57534e;
+    --text-muted: #78716c;
+    --primary: #ca8a04;
+    --primary-light: #eab308;
+    --primary-glow: rgba(202, 138, 4, 0.28);
+    --brand-grad: linear-gradient(135deg, #eab308 0%, #ca8a04 100%);
+    --brand-text: #1c1917;
+    --title-grad: linear-gradient(120deg, #1c1917 0%, #292524 100%);
+    --btn-primary-bg: linear-gradient(135deg, #eab308 0%, #ca8a04 100%);
+    --btn-primary-text: #1c1917;
+    --btn-hover-bg: linear-gradient(135deg, #facc15 0%, #eab308 100%);
+    --tab-active-bg: linear-gradient(135deg, #eab308 0%, #ca8a04 100%);
+    --tab-active-text: #1c1917;
+    --input-bg: #ffffff;
+    --input-focus-bg: #ffffff;
+    --table-header-bg: #f5f5f4;
+    --table-row-hover: #fafaf9;
+    --table-detail-bg: #fafaf9;
+    --panel-border-accent: #ca8a04;
+    --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.04);
+    --header-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    --terminal-bg: #1c1917;
+    --terminal-text: #fafaf9;
+    --terminal-border: rgba(0, 0, 0, 0.12);
+    --dropzone-bg: #fafaf9;
+    --dropzone-border: #fde047;
+    --dropzone-icon: #ca8a04;
+    --tag-bg: #f5f5f4;
+    --tag-text: #44403c;
+    --tag-accent-bg: #fef9c3;
+    --tag-accent-border: #fde047;
+    --tag-accent-text: #854d0e;
+    --green-bg: rgba(5, 150, 105, 0.1);
+    --green-text: #059669;
+    --amber-bg: rgba(202, 138, 4, 0.12);
+    --amber-text: #a16207;
+    --red-bg: rgba(225, 29, 72, 0.08);
+    --red-text: #e11d48;
+    --badge-gray-bg: #f5f5f4;
+    --badge-gray-text: #57534e;
+    --badge-internshala-bg: #f0fdfa;
+    --badge-internshala-text: #0f766e;
+    --badge-internshala-border: #99f6e4;
+    --badge-linkedin-bg: #fef9c3;
+    --badge-linkedin-text: #854d0e;
+    --badge-linkedin-border: #fde047;
+    --score-high-bg: #ecfdf5;
+    --score-high-text: #047857;
+    --score-high-border: #a7f3d0;
+    --score-mid-bg: #fef9c3;
+    --score-mid-text: #854d0e;
+    --score-mid-border: #fde047;
+    --score-low-bg: #fffbeb;
+    --score-low-text: #b45309;
+    --score-low-border: #fde68a;
+    --score-poor-bg: #fef2f2;
+    --score-poor-text: #b91c1c;
+    --score-poor-border: #fecaca;
+  }
+
+  :root {
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+    --radius-xl: 24px;
+    --font: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+  }
+
+  /* ── Base Styles ─────────────────────────────────────────────── */
+  body {
+    font-family: var(--font);
+    font-size: 14px;
+    line-height: 1.6;
+    background-color: var(--bg-dark);
+    background-image: var(--bg-image);
+    background-attachment: fixed;
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding: 28px 24px 80px;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+
+  .wrap {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  /* ── Header ─────────────────────────────────────────────────── */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding: 16px 24px;
+    background: var(--surface-glass);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--header-shadow);
+    transition: all 0.25s ease;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .brand-logo {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
+    background: var(--brand-grad);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    color: var(--brand-text);
+    font-size: 22px;
+    letter-spacing: -0.05em;
+    box-shadow: 0 0 20px var(--primary-glow);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .brand-logo::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.3) 50%, transparent 60%);
+    animation: shimmer 6s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    20%, 100% { transform: translateX(100%); }
+  }
+
+  .brand-info h1 {
+    font-size: 21px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    background: var(--title-grad);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .brand-info h1 .version-tag {
+    font-size: 11px;
+    padding: 2px 7px;
+    background: var(--tag-accent-bg);
+    border: 1px solid var(--tag-accent-border);
+    color: var(--tag-accent-text);
+    border-radius: 999px;
+    -webkit-text-fill-color: initial;
+    font-weight: 700;
+  }
+
+  .brand-info .tagline {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  .header-badges {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 14px;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 600;
+    backdrop-filter: blur(8px);
+    transition: all 0.2s ease;
+  }
+
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+  }
+
+  .badge-green {
+    background: var(--green-bg);
+    color: var(--green-text);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+  }
+  .badge-green .status-dot {
+    background: #10b981;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+  }
+
+  .badge-amber {
+    background: var(--amber-bg);
+    color: var(--amber-text);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+  }
+  .badge-amber .status-dot { background: #f59e0b; }
+
+  .badge-red {
+    background: var(--red-bg);
+    color: var(--red-text);
+    border: 1px solid rgba(244, 63, 94, 0.3);
+  }
+  .badge-red .status-dot { background: #f43f5e; }
+
+  .badge-gray {
+    background: var(--badge-gray-bg);
+    color: var(--badge-gray-text);
+    border: 1px solid var(--border-glass);
+  }
+
+  /* ── Theme Toggle Button ─────────────────────────────────────── */
+  .theme-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    background: var(--surface-elevated);
+    border: 1px solid var(--border-glass);
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+  }
+
+  .theme-toggle-btn:hover {
+    background: var(--surface-hover);
+    border-color: var(--primary);
+    transform: translateY(-1px);
+  }
+
+  /* ── Stats Hero Grid ─────────────────────────────────────────── */
+  .stats-hero {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    background: var(--surface-glass);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-lg);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--border-light);
+  }
+
+  .stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .stat-icon.blue, .stat-icon.amber { background: var(--amber-bg); color: var(--amber-text); border: 1px solid rgba(245, 158, 11, 0.3); }
+  .stat-icon.green { background: var(--green-bg); color: var(--green-text); border: 1px solid rgba(16, 185, 129, 0.3); }
+  .stat-icon.cyan, .stat-icon.teal { background: var(--tag-accent-bg); color: var(--primary); border: 1px solid var(--border-light); }
+  .stat-icon.purple, .stat-icon.bronze { background: var(--amber-bg); color: var(--amber-text); border: 1px solid rgba(217, 119, 6, 0.3); }
+
+  .stat-meta .stat-val {
+    font-size: 19px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  .stat-meta .stat-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 3px;
+  }
+
+  /* ── Tabs Navigation ────────────────────────────────────────── */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    background: var(--surface-glass);
+    backdrop-filter: blur(16px);
+    padding: 6px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-glass);
+    box-shadow: var(--card-shadow);
+  }
+
+  .tab-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 18px;
+    border: none;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--text-secondary);
+    font-family: var(--font);
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .tab-btn:hover {
+    color: var(--text-primary);
+    background: var(--surface-elevated);
+  }
+
+  .tab-btn.active {
+    background: var(--tab-active-bg);
+    color: var(--tab-active-text);
+    font-weight: 800;
+    box-shadow: 0 4px 18px var(--primary-glow);
+  }
+
+  /* ── Cards & Panels ─────────────────────────────────────────── */
+  .panel { display: none; }
+  .panel.active { display: block; animation: panelFade 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+
+  @keyframes panelFade {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card {
+    background: var(--surface-glass-card);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-xl);
+    padding: 26px 28px;
+    margin-bottom: 22px;
+    box-shadow: var(--card-shadow);
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+    border-bottom: 1px solid var(--border-glass);
+    padding-bottom: 16px;
+  }
+
+  .card-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+
+  .card-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 3px;
+    font-weight: 400;
+  }
+
+  /* ── Form Controls ──────────────────────────────────────────── */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1.1fr 1.6fr 1.3fr 0.6fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .field label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .field input,
+  .field select,
+  .field textarea {
+    background: var(--input-bg);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-family: var(--font);
+    font-size: 13.5px;
+    padding: 11px 14px;
+    outline: none;
+    transition: all 0.2s ease;
+  }
+
+  .field input:hover,
+  .field select:hover,
+  .field textarea:hover {
+    border-color: var(--border-light);
+  }
+
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-glow);
+    background: var(--input-focus-bg);
+  }
+
+  .field select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 38px;
+  }
+
+  .field textarea {
+    resize: vertical;
+    min-height: 90px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.6;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 22px;
+    border: none;
+    border-radius: var(--radius-md);
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 18px var(--primary-glow);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 22px var(--primary-glow);
+    background: var(--btn-hover-bg);
+  }
+
+  .btn:active {
+    transform: translateY(0);
+  }
+
+  .btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .btn-outline {
+    background: var(--surface-elevated);
+    border: 1px solid var(--border-glass);
+    color: var(--text-primary);
+    box-shadow: none;
+  }
+
+  .btn-outline:hover {
+    background: var(--surface-hover);
+    border-color: var(--border-light);
+    transform: translateY(-1px);
+  }
+
+  .btn-apply {
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+    font-size: 12px;
+    font-weight: 800;
+    padding: 6px 14px;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 10px var(--primary-glow);
+    transition: all 0.2s;
+  }
+
+  .btn-apply:hover {
+    background: var(--btn-hover-bg);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px var(--primary-glow);
+  }
+
+  /* ── Interactive Results Filter Bar ──────────────────────────── */
+  .filter-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--surface-elevated);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    margin-bottom: 16px;
+  }
+
+  .search-filter-input {
+    background: var(--input-bg);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    padding: 8px 12px;
+    font-size: 13px;
+    outline: none;
+    min-width: 240px;
+    transition: border-color 0.2s;
+  }
+
+  .search-filter-input:focus {
+    border-color: var(--primary);
+  }
+
+  .quick-filters {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .filter-pill {
+    padding: 5px 12px;
+    font-size: 11.5px;
+    font-weight: 600;
+    border-radius: 999px;
+    background: var(--surface-glass);
+    border: 1px solid var(--border-glass);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .filter-pill:hover {
+    background: var(--surface-hover);
+    color: var(--text-primary);
+  }
+
+  .filter-pill.active {
+    background: var(--tag-accent-bg);
+    border-color: var(--primary);
+    color: var(--tag-accent-text);
+  }
+
+  /* ── Terminal / Log Output ──────────────────────────────────── */
+  .terminal-box {
+    background: var(--terminal-bg);
+    border: 1px solid var(--terminal-border);
+    border-radius: var(--radius-md);
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.7;
+    margin-top: 18px;
+    display: none;
+    overflow: hidden;
+    box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+  }
+
+  .terminal-header {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 8px 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: #94a3b8;
+  }
+
+  .mac-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .mac-dot.red { background: #f43f5e; }
+  .mac-dot.yellow { background: #f59e0b; }
+  .mac-dot.green { background: #10b981; }
+
+  .terminal-body {
+    padding: 14px 16px;
+    height: 150px;
+    overflow-y: auto;
+    color: var(--terminal-text);
+  }
+
+  .log-line { display: block; }
+  .log-error { color: #fb7185; font-weight: 600; }
+  .log-success { color: #34d399; font-weight: 600; }
+
+  /* ── Results Table ──────────────────────────────────────────── */
+  .table-responsive {
+    overflow-x: auto;
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    background: var(--surface-glass);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    text-align: left;
+  }
+
+  thead th {
+    background: var(--table-header-bg);
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-glass);
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  tbody tr.item-row {
+    border-bottom: 1px solid var(--border-glass);
+    transition: background 0.15s ease;
+  }
+
+  tbody tr.item-row:hover {
+    background: var(--table-row-hover);
+    cursor: pointer;
+  }
+
+  tbody td {
+    padding: 14px 16px;
+    vertical-align: middle;
+  }
+
+  /* Score Badges */
+  .score-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    font-weight: 800;
+    font-size: 13px;
+    font-family: var(--mono);
+    letter-spacing: -0.03em;
+  }
+
+  .score-high {
+    background: var(--score-high-bg);
+    color: var(--score-high-text);
+    border: 1px solid var(--score-high-border);
+  }
+
+  .score-mid {
+    background: var(--score-mid-bg);
+    color: var(--score-mid-text);
+    border: 1px solid var(--score-mid-border);
+  }
+
+  .score-low {
+    background: var(--score-low-bg);
+    color: var(--score-low-text);
+    border: 1px solid var(--score-low-border);
+  }
+
+  .score-poor {
+    background: var(--score-poor-bg);
+    color: var(--score-poor-text);
+    border: 1px solid var(--score-poor-border);
+  }
+
+  /* Source Platform Badges */
+  .badge-internshala {
+    background: var(--badge-internshala-bg);
+    color: var(--badge-internshala-text);
+    border: 1px solid var(--badge-internshala-border);
+  }
+
+  .badge-linkedin {
+    background: var(--badge-linkedin-bg);
+    color: var(--badge-linkedin-text);
+    border: 1px solid var(--badge-linkedin-border);
+  }
+
+  /* Expanded Detail Drawer */
+  .detail-row td {
+    background: var(--table-detail-bg);
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--border-glass);
+  }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+  }
+
+  .reasoning-panel {
+    background: var(--surface-glass-card);
+    border: 1px solid var(--border-glass);
+    border-left: 3px solid var(--panel-border-accent);
+    border-radius: var(--radius-sm);
+    padding: 14px 18px;
+    font-size: 13.5px;
+    color: var(--text-primary);
+    line-height: 1.65;
+  }
+
+  .missing-panel {
+    background: var(--red-bg);
+    border: 1px solid rgba(244, 63, 94, 0.25);
+    border-radius: var(--radius-sm);
+    padding: 14px 18px;
+  }
+
+  .missing-panel .panel-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--red-text);
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+
+  /* ── Dropzone & Profile ──────────────────────────────────────── */
+  .dropzone {
+    border: 2px dashed var(--dropzone-border);
+    border-radius: var(--radius-xl);
+    padding: 42px 24px;
+    text-align: center;
+    background: var(--dropzone-bg);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .dropzone:hover, .dropzone.dragover {
+    border-color: var(--primary);
+    background: var(--tag-accent-bg);
+    box-shadow: 0 0 25px var(--primary-glow);
+  }
+
+  .dropzone-icon {
+    font-size: 38px;
+    margin-bottom: 10px;
+    color: var(--dropzone-icon);
+  }
+
+  .dropzone-text {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+
+  .dropzone-sub {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .profile-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .prof-stat-box {
+    background: var(--surface-elevated);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    padding: 14px 18px;
+  }
+
+  .prof-stat-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+  }
+
+  .prof-stat-value {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-top: 3px;
+  }
+
+  .tag-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 8px;
+  }
+
+  .tag {
+    background: var(--tag-bg);
+    border: 1px solid var(--border-glass);
+    color: var(--tag-text);
+    border-radius: 9999px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .tag-accent {
+    background: var(--tag-accent-bg);
+    border-color: var(--tag-accent-border);
+    color: var(--tag-accent-text);
+    font-weight: 600;
+  }
+
+  .tag-gap {
+    background: var(--red-bg);
+    border-color: rgba(244, 63, 94, 0.3);
+    color: var(--red-text);
+  }
+
+  /* ── Feedback Banners ────────────────────────────────────────── */
+  .feedback {
+    padding: 12px 18px;
+    border-radius: var(--radius-md);
+    font-size: 13.5px;
+    font-weight: 600;
+    margin-top: 14px;
+    display: none;
+  }
+
+  .feedback.success {
+    background: var(--green-bg);
+    color: var(--green-text);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    display: block;
+  }
+
+  .feedback.error {
+    background: var(--red-bg);
+    color: var(--red-text);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    display: block;
+  }
+
+  @media (max-width: 900px) {
+    .stats-hero { grid-template-columns: repeat(2, 1fr); }
+    .form-grid { grid-template-columns: 1fr; }
+    .detail-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <div class="brand-logo">A</div>
+      <div class="brand-info">
+        <h1>AutoJobApply <span class="version-tag">PRO v2.0</span></h1>
+        <div class="tagline">Local Multi-Platform Agentic Job Search & AI Fit Ranker</div>
+      </div>
+    </div>
+    <div class="header-badges">
+      <span id="badge-key" class="badge badge-amber"><span class="status-dot"></span>NVIDIA NIM: Checking…</span>
+      <span id="badge-seen" class="badge badge-gray"><span class="status-dot" style="background:#64748b;"></span>0 jobs seen</span>
+      <button id="theme-toggle-btn" class="theme-toggle-btn" onclick="toggleTheme()" title="Switch Light/Dark Theme">
+        <span id="theme-icon">🌙</span>
+        <span id="theme-text">Dark Mode</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Quick Stat Hero Cards -->
+  <div class="stats-hero">
+    <div class="stat-card">
+      <div class="stat-icon blue">⚡</div>
+      <div class="stat-meta">
+        <div id="stat-discovered" class="stat-val">0</div>
+        <div class="stat-title">Ranked Discoveries</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon green">🎯</div>
+      <div class="stat-meta">
+        <div id="stat-topscore" class="stat-val">—</div>
+        <div class="stat-title">Top Fit Score</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon cyan">🌐</div>
+      <div class="stat-meta">
+        <div id="stat-sources" class="stat-val">2 Active</div>
+        <div class="stat-title">LinkedIn + Internshala</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon purple">👤</div>
+      <div class="stat-meta">
+        <div id="stat-profile-skills" class="stat-val">14 Skills</div>
+        <div class="stat-title">Candidate Profile</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Tabs -->
+  <nav class="tabs">
+    <button id="tab-btn-scrape" class="tab-btn active" onclick="switchTab('scrape')">
+      🔍 Discovery & Ranked Feed
+    </button>
+    <button id="tab-btn-profile" class="tab-btn" onclick="switchTab('profile')">
+      📄 Candidate Profile
+    </button>
+    <button id="tab-btn-settings" class="tab-btn" onclick="switchTab('settings')">
+      ⚙️ Rubric & AI Model Settings
+    </button>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- TAB 1: SCRAPE & RESULTS -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <main id="tab-scrape" class="panel active">
+    <!-- Search Configuration Card -->
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Discovery Query & AI Scorer</div>
+          <div class="card-desc">Fetch live job postings from selected platforms, deduplicate against seen registry, and score fit with NVIDIA NIM</div>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label for="sel-source">Source Platform</label>
+          <select id="sel-source">
+            <option value="all">✨ All Platforms (LinkedIn + Internshala)</option>
+            <option value="internshala">Internshala (Freshers & Junior)</option>
+            <option value="linkedin">LinkedIn Worldwide</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="sel-seniority">Target Seniority</label>
+          <select id="sel-seniority">
+            <option value="">Neutral (no filter)</option>
+            <option value="junior">Junior / Entry-Level</option>
+            <option value="mid">Mid-Level</option>
+            <option value="senior">Senior</option>
+            <option value="lead">Lead / Staff</option>
+            <option value="principal">Principal</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="inp-role">Role Title Override</label>
+          <input type="text" id="inp-role" placeholder="e.g. Full Stack Developer">
+        </div>
+
+        <div class="field">
+          <label for="inp-location">Target Location</label>
+          <input type="text" id="inp-location" placeholder="e.g. Bangalore, India">
+        </div>
+
+        <div class="field">
+          <label for="inp-limit">Batch Limit</label>
+          <input type="number" id="inp-limit" value="15" min="1" max="100">
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px; padding-top:14px; border-top:1px solid var(--border-glass);">
+        <span id="summary-meta" style="font-size:13px; color:var(--text-secondary); font-weight:500;">
+          Ready to run discovery.
+        </span>
+        <button id="btn-run-scrape" class="btn" onclick="startScrape()">
+          ⚡ Run Discovery & AI Rank
+        </button>
+      </div>
+
+      <!-- Realtime Log Terminal -->
+      <div id="terminal-box" class="terminal-box">
+        <div class="terminal-header">
+          <span class="mac-dot red"></span>
+          <span class="mac-dot yellow"></span>
+          <span class="mac-dot green"></span>
+          <span style="margin-left:6px;">Discovery Pipeline Stream</span>
+        </div>
+        <div id="terminal-body" class="terminal-body"></div>
+      </div>
+    </section>
+
+    <!-- Results Table Card -->
+    <section id="results-card" class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Live Ranked Job Postings</div>
+          <div id="results-subtitle" class="card-desc">Click any row to reveal detailed AI reasoning, candidate alignment, and missing skills</div>
+        </div>
+      </div>
+
+      <!-- Quick Filter Bar -->
+      <div id="filter-bar" class="filter-bar" style="display:none;">
+        <input type="text" id="inp-table-filter" class="search-filter-input" placeholder="🔍 Quick filter by company, title, skill..." oninput="handleTableFilter()">
+        <div class="quick-filters">
+          <button class="filter-pill active" onclick="setScoreFilter('all', this)">All Scores</button>
+          <button class="filter-pill" onclick="setScoreFilter('high', this)">⭐ Top Fit (70+)</button>
+          <button class="filter-pill" onclick="setScoreFilter('mid', this)">Good (50+)</button>
+          <button class="filter-pill" onclick="setPlatformFilter('all', this)">All Sources</button>
+          <button class="filter-pill" onclick="setPlatformFilter('internshala', this)">Internshala</button>
+          <button class="filter-pill" onclick="setPlatformFilter('linkedin', this)">LinkedIn</button>
+        </div>
+      </div>
+
+      <div id="results-empty" style="text-align:center; padding:48px 24px; color:var(--text-secondary);">
+        <div style="font-size:36px; margin-bottom:12px; opacity:0.8;">💼</div>
+        <div style="font-size:16px; font-weight:700; color:var(--text-primary); margin-bottom:6px;">No ranked job results yet</div>
+        <p style="font-size:13px; max-width:440px; margin:0 auto; color:var(--text-muted);">
+          Trigger a discovery search above, or verify your resume is ingested in the Candidate Profile tab.
+        </p>
+      </div>
+
+      <div id="table-wrap" class="table-responsive" style="display:none;">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 55px; text-align: center;">#</th>
+              <th style="width: 80px; text-align: center;">Score</th>
+              <th style="width: 220px;">Company</th>
+              <th>Position Title</th>
+              <th style="width: 170px;">Location</th>
+              <th style="width: 110px;">Posted</th>
+              <th style="width: 100px; text-align: right;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="results-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- TAB 2: CANDIDATE PROFILE -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <section id="tab-profile" class="panel">
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Resume & Profile Ingestion</div>
+          <div class="card-desc">Upload your resume (.pdf or .txt) to automatically parse your skills, seniority, and preferences into profile.json</div>
+        </div>
+        <button id="btn-reparse" class="btn btn-outline" onclick="reparseProfile()">🔄 Re-parse Active Resume</button>
+      </div>
+
+      <!-- Dropzone -->
+      <div id="dropzone" class="dropzone" onclick="document.getElementById('file-resume').click()">
+        <input type="file" id="file-resume" accept=".pdf,.txt,.md,.tex" style="display:none;" onchange="handleFileUpload(event)">
+        <div class="dropzone-icon">📄</div>
+        <div class="dropzone-text">Click or drop your resume file here</div>
+        <div class="dropzone-sub">Supported formats: PDF, TXT, MD, LaTeX</div>
+      </div>
+      <div id="profile-upload-msg" class="feedback"></div>
+
+      <!-- Parsed Profile Display -->
+      <div id="profile-display" style="display:none; margin-top:28px;">
+        <div class="profile-stats">
+          <div class="prof-stat-box">
+            <div class="prof-stat-label">Detected Seniority</div>
+            <div id="prof-seniority" class="prof-stat-value">—</div>
+          </div>
+          <div class="prof-stat-box">
+            <div class="prof-stat-label">Years of Experience</div>
+            <div id="prof-exp" class="prof-stat-value">—</div>
+          </div>
+          <div class="prof-stat-box">
+            <div class="prof-stat-label">Preferred Location</div>
+            <div id="prof-loc" class="prof-stat-value">—</div>
+          </div>
+        </div>
+
+        <div class="card" style="background:var(--surface-elevated); padding:18px 22px; margin-bottom:16px;">
+          <div class="prof-stat-label" style="margin-bottom:6px;">Executive Summary</div>
+          <p id="prof-summary" style="font-size:13.5px; color:var(--text-primary); line-height:1.6;"></p>
+        </div>
+
+        <div style="margin-top:18px;">
+          <div class="prof-stat-label">Recognized Skills (Used for AI Fit Ranking)</div>
+          <div id="prof-skills" class="tag-cloud"></div>
+        </div>
+
+        <div style="margin-top:18px;">
+          <div class="prof-stat-label">Roles & Titles Held</div>
+          <div id="prof-titles" class="tag-cloud"></div>
+        </div>
+
+        <div style="margin-top:18px;">
+          <div class="prof-stat-label">Industries & Domains</div>
+          <div id="prof-industries" class="tag-cloud"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- TAB 3: SETTINGS & RUBRIC -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <section id="tab-settings" class="panel">
+    <!-- API Key Card -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">NVIDIA NIM Connection</div>
+          <div class="card-desc">Configure your NVIDIA NIM API key for ultra-fast Llama-3.2 fit scoring</div>
+        </div>
+        <span id="settings-key-badge" class="badge badge-amber"><span class="status-dot"></span>Checking…</span>
+      </div>
+
+      <div class="field" style="margin-bottom:16px;">
+        <label for="inp-api-key">NVIDIA API Key</label>
+        <input type="password" id="inp-api-key" placeholder="nvapi-..." autocomplete="off">
+        <div style="font-size:11.5px; color:var(--text-muted); margin-top:5px;">
+          Saved securely in <code>.env</code> on your local computer. Never committed or sent to external servers.
+        </div>
+      </div>
+
+      <button id="btn-save-key" class="btn" onclick="saveApiKey()">
+        🔐 Validate & Save API Key
+      </button>
+      <div id="key-feedback" class="feedback"></div>
+    </div>
+
+    <!-- Rubric Settings Card -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Candidate Scoring Rubric (config.json)</div>
+          <div class="card-desc">Define hard deal-breaker filters, score boosts, and location parameters</div>
+        </div>
+      </div>
+
+      <div class="form-grid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom:18px;">
+        <div class="field">
+          <label for="rubric-location">Base Location & Remote Policy</label>
+          <input type="text" id="rubric-location" placeholder="Bangalore, India">
+        </div>
+
+        <div class="field">
+          <label for="rubric-language">Language Constraint</label>
+          <input type="text" id="rubric-language" placeholder="English">
+        </div>
+
+        <div class="field">
+          <label for="rubric-seniority">Default Seniority Baseline</label>
+          <select id="rubric-seniority">
+            <option value="junior">Junior</option>
+            <option value="mid">Mid</option>
+            <option value="senior">Senior</option>
+            <option value="lead">Lead</option>
+            <option value="principal">Principal</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field" style="margin-bottom:16px;">
+        <label for="rubric-dealbreakers">Deal-Breakers (Hard Gates — 1 per line, scores 0 if triggered)</label>
+        <textarea id="rubric-dealbreakers" placeholder="REJECT if ..."></textarea>
+      </div>
+
+      <div class="field" style="margin-bottom:18px;">
+        <label for="rubric-boosts">Score Boosts (1 per line)</label>
+        <textarea id="rubric-boosts" placeholder="+5 bonus if ..."></textarea>
+      </div>
+
+      <button id="btn-save-rubric" class="btn" onclick="saveRubric()">
+        💾 Save Rubric Configuration
+      </button>
+      <div id="rubric-feedback" class="feedback"></div>
+    </div>
+  </section>
+</div>
+
+<script>
+let _pollTimer = null;
+let _rawResults = [];
+let _scoreFilter = 'all';
+let _platformFilter = 'all';
+
+// ── Theme Management ────────────────────────────────────────────────────────
+function initTheme() {
+  const saved = localStorage.getItem("autojob_theme") || "light";
+  setTheme(saved);
+}
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute("data-theme") || "light";
+  const target = current === "light" ? "dark" : "light";
+  setTheme(target);
+}
+
+function setTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  localStorage.setItem("autojob_theme", theme);
+  const icon = document.getElementById("theme-icon");
+  const txt = document.getElementById("theme-text");
+  if (icon && txt) {
+    if (theme === "light") {
+      icon.textContent = "🌙";
+      txt.textContent = "Dark Mode";
+    } else {
+      icon.textContent = "☀️";
+      txt.textContent = "Light Mode";
+    }
+  }
+}
+
+// ── Tab Management ──────────────────────────────────────────────────────────
+function switchTab(tabId) {
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(panel => panel.classList.remove('active'));
+
+  const btn = document.getElementById(`tab-btn-${tabId}`);
+  const panel = document.getElementById(`tab-${tabId}`);
+  if (btn && panel) {
+    btn.classList.add('active');
+    panel.classList.add('active');
+  }
+}
+
+// ── Helpers ─────────────────────────────────────────────────────────────────
+function escHtml(str) {
+  return String(str || "").replace(/[&<>"']/g, m => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  }[m]));
+}
+
+async function fetchJSON(url, opts) {
+  const resp = await fetch(url, opts);
+  if (!resp.ok) {
+    let msg = `HTTP ${resp.status}`;
+    try {
+      const err = await resp.json();
+      msg = err.detail || err.error || err.message || msg;
+    } catch (_) {}
+    throw new Error(msg);
+  }
+  return resp.json();
+}
+
+// ── App Init ────────────────────────────────────────────────────────────────
+document.addEventListener("DOMContentLoaded", () => {
+  initTheme();
+  initDropzone();
+  loadSettings();
+  loadProfile();
+  loadLatestResults();
+  loadSeenCount();
+});
+
+// ── 1. Settings & Rubric ────────────────────────────────────────────────────
+async function loadSettings() {
+  try {
+    const data = await fetchJSON("/api/settings");
+    const keyBadge = document.getElementById("badge-key");
+    const settingsBadge = document.getElementById("settings-key-badge");
+
+    if (data.api_key_configured) {
+      keyBadge.className = "badge badge-green";
+      keyBadge.innerHTML = `<span class="status-dot"></span>NVIDIA NIM: Active ✓`;
+      settingsBadge.className = "badge badge-green";
+      settingsBadge.innerHTML = `<span class="status-dot"></span>Configured ✓`;
+    } else {
+      keyBadge.className = "badge badge-red";
+      keyBadge.innerHTML = `<span class="status-dot"></span>NVIDIA NIM: Not Set`;
+      settingsBadge.className = "badge badge-red";
+      settingsBadge.innerHTML = `<span class="status-dot"></span>Not Set`;
+    }
+
+    if (data.rubric) {
+      document.getElementById("rubric-location").value = data.rubric.location || "";
+      document.getElementById("rubric-language").value = data.rubric.language || "English";
+      document.getElementById("rubric-seniority").value = data.rubric.seniority_default || "mid";
+      document.getElementById("sel-seniority").value = data.rubric.seniority_default || "mid";
+      document.getElementById("rubric-dealbreakers").value = (data.rubric.deal_breakers || []).join("\n");
+      document.getElementById("rubric-boosts").value = (data.rubric.score_boosts || []).join("\n");
+    }
+  } catch (err) {
+    console.error("Failed to load settings:", err);
+  }
+}
+
+async function saveApiKey() {
+  const btn = document.getElementById("btn-save-key");
+  const fb = document.getElementById("key-feedback");
+  const key = document.getElementById("inp-api-key").value.trim();
+
+  if (!key) {
+    fb.className = "feedback error";
+    fb.textContent = "Please enter an API key";
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "Validating against NIM…";
+  fb.className = "feedback";
+  fb.style.display = "none";
+
+  try {
+    await fetchJSON("/api/settings/api-key", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ api_key: key })
+    });
+    fb.className = "feedback success";
+    fb.textContent = "NVIDIA API key validated & saved!";
+    document.getElementById("inp-api-key").value = "";
+    loadSettings();
+  } catch (err) {
+    fb.className = "feedback error";
+    fb.textContent = err.message;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "🔐 Validate & Save API Key";
+  }
+}
+
+async function saveRubric() {
+  const fb = document.getElementById("rubric-feedback");
+  const btn = document.getElementById("btn-save-rubric");
+  btn.disabled = true;
+
+  const payload = {
+    location: document.getElementById("rubric-location").value.trim(),
+    language: document.getElementById("rubric-language").value.trim(),
+    seniority_default: document.getElementById("rubric-seniority").value,
+    deal_breakers: document.getElementById("rubric-dealbreakers").value.split("\n").map(s => s.trim()).filter(Boolean),
+    score_boosts: document.getElementById("rubric-boosts").value.split("\n").map(s => s.trim()).filter(Boolean)
+  };
+
+  try {
+    await fetchJSON("/api/settings/rubric", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    fb.className = "feedback success";
+    fb.textContent = "Rubric saved successfully to config.json!";
+    document.getElementById("sel-seniority").value = payload.seniority_default;
+  } catch (err) {
+    fb.className = "feedback error";
+    fb.textContent = err.message;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ── 2. Candidate Profile ────────────────────────────────────────────────────
+async function loadProfile() {
+  try {
+    const res = await fetchJSON("/api/profile");
+    if (res && res.skills) {
+      renderProfile(res);
+    } else if (res && res.profile && res.profile.skills) {
+      renderProfile(res.profile);
+    }
+  } catch (e) {
+    console.log("No profile loaded yet");
+  }
+}
+
+function renderProfile(p) {
+  document.getElementById("profile-display").style.display = "block";
+  document.getElementById("prof-seniority").textContent = (p.seniority || "Junior").toUpperCase();
+  document.getElementById("prof-exp").textContent = `${p.years_experience || 0} Years`;
+  document.getElementById("prof-loc").textContent = p.location_pref || "Any";
+  document.getElementById("prof-summary").textContent = p.summary || "No executive summary provided.";
+
+  const skillsDiv = document.getElementById("prof-skills");
+  skillsDiv.innerHTML = (p.skills || []).map(s => `<span class="tag tag-accent">${escHtml(s)}</span>`).join("");
+
+  const titlesDiv = document.getElementById("prof-titles");
+  titlesDiv.innerHTML = (p.titles_held || []).map(t => `<span class="tag">${escHtml(t)}</span>`).join("");
+
+  const indDiv = document.getElementById("prof-industries");
+  indDiv.innerHTML = (p.industries || []).map(i => `<span class="tag">${escHtml(i)}</span>`).join("");
+
+  document.getElementById("summary-meta").textContent = 
+    `Active Profile: ${p.years_experience || 0}y exp · ${p.skills ? p.skills.length : 0} skills · Preferred: ${p.location_pref || 'Bangalore'}`;
+
+  const profSkillCount = (p.skills || []).length;
+  document.getElementById("stat-profile-skills").textContent = `${profSkillCount} Skills`;
+}
+
+function initDropzone() {
+  const dropzone = document.getElementById("dropzone");
+  ['dragenter', 'dragover'].forEach(name => {
+    dropzone.addEventListener(name, (e) => { e.preventDefault(); dropzone.classList.add('dragover'); }, false);
+  });
+  ['dragleave', 'drop'].forEach(name => {
+    dropzone.addEventListener(name, (e) => { e.preventDefault(); dropzone.classList.remove('dragover'); }, false);
+  });
+  dropzone.addEventListener('drop', (e) => {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    if (files.length) uploadFile(files[0]);
+  });
+}
+
+function handleFileUpload(e) {
+  if (e.target.files && e.target.files.length) {
+    uploadFile(e.target.files[0]);
+  }
+}
+
+async function uploadFile(file) {
+  const fb = document.getElementById("profile-upload-msg");
+  fb.className = "feedback";
+  fb.style.display = "block";
+  fb.textContent = `Uploading & parsing ${file.name} with AI…`;
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    const res = await fetchJSON("/api/profile/upload", {
+      method: "POST",
+      body: formData
+    });
+    fb.className = "feedback success";
+    fb.textContent = `Extracted profile from ${file.name}!`;
+    if (res.profile) renderProfile(res.profile);
+  } catch (err) {
+    fb.className = "feedback error";
+    fb.textContent = `Upload failed: ${err.message}`;
+  }
+}
+
+async function reparseProfile() {
+  const fb = document.getElementById("profile-upload-msg");
+  fb.className = "feedback";
+  fb.style.display = "block";
+  fb.textContent = "Re-parsing resume from documents/cv/…";
+
+  try {
+    const res = await fetchJSON("/api/profile/reparse", { method: "POST" });
+    fb.className = "feedback success";
+    fb.textContent = "Profile re-parsed successfully!";
+    if (res.profile) renderProfile(res.profile);
+  } catch (err) {
+    fb.className = "feedback error";
+    fb.textContent = `Re-parse failed: ${err.message}`;
+  }
+}
+
+// ── 3. Pipeline Scraping & Results ──────────────────────────────────────────
+async function loadSeenCount() {
+  try {
+    const res = await fetchJSON("/api/seen-count");
+    document.getElementById("badge-seen").innerHTML = `<span class="status-dot" style="background:#64748b;"></span>${res.count.toLocaleString()} jobs seen`;
+  } catch (_) {}
+}
+
+async function loadLatestResults() {
+  try {
+    const res = await fetchJSON("/api/results/latest");
+    if (res && res.results && res.results.length) {
+      _rawResults = res.results;
+      renderFilteredResults(res.file);
+    }
+  } catch (_) {}
+}
+
+async function startScrape() {
+  const btn = document.getElementById("btn-run-scrape");
+  btn.disabled = true;
+
+  const payload = {
+    seniority: document.getElementById("sel-seniority").value || null,
+    role: document.getElementById("inp-role").value.trim() || null,
+    location: document.getElementById("inp-location").value.trim() || null,
+    source: document.getElementById("sel-source").value || "all",
+    limit: parseInt(document.getElementById("inp-limit").value, 10) || 15,
+    jobage: 30
+  };
+
+  const term = document.getElementById("terminal-box");
+  const termBody = document.getElementById("terminal-body");
+  term.style.display = "block";
+  termBody.innerHTML = `<span class="log-line">🚀 Starting discovery pipeline across ${payload.source.toUpperCase()}…</span>`;
+
+  try {
+    await fetchJSON("/api/scrape", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    startPolling();
+  } catch (err) {
+    termBody.innerHTML += `<span class="log-line log-error">Error: ${escHtml(err.message)}</span>`;
+    btn.disabled = false;
+  }
+}
+
+function startPolling() {
+  clearInterval(_pollTimer);
+  _pollTimer = setInterval(pollScrapeStatus, 1200);
+}
+
+async function pollScrapeStatus() {
+  try {
+    const st = await fetchJSON("/api/scrape/status");
+    const termBody = document.getElementById("terminal-body");
+
+    if (st.log && st.log.length) {
+      termBody.innerHTML = st.log.map(l => {
+        const cls = l.includes("ERROR") ? "log-error" : l.includes("Done") ? "log-success" : "";
+        return `<span class="log-line ${cls}">${escHtml(l)}</span>`;
+      }).join("");
+      termBody.scrollTop = termBody.scrollHeight;
+    }
+
+    if (st.status === "done") {
+      clearInterval(_pollTimer);
+      document.getElementById("btn-run-scrape").disabled = false;
+      _rawResults = st.results || [];
+      renderFilteredResults();
+      loadSeenCount();
+    } else if (st.status === "error") {
+      clearInterval(_pollTimer);
+      document.getElementById("btn-run-scrape").disabled = false;
+    }
+  } catch (_) {}
+}
+
+// ── Interactive Filtering & Rendering ──────────────────────────────────────
+function handleTableFilter() {
+  renderFilteredResults();
+}
+
+function setScoreFilter(filter, el) {
+  _scoreFilter = filter;
+  el.parentElement.querySelectorAll('.filter-pill').forEach(p => {
+    if (p.textContent.includes('Score') || p.textContent.includes('Fit')) p.classList.remove('active');
+  });
+  el.classList.add('active');
+  renderFilteredResults();
+}
+
+function setPlatformFilter(plat, el) {
+  _platformFilter = plat;
+  el.parentElement.querySelectorAll('.filter-pill').forEach(p => {
+    if (p.textContent.includes('Source') || p.textContent.includes('LinkedIn') || p.textContent.includes('Internshala')) p.classList.remove('active');
+  });
+  el.classList.add('active');
+  renderFilteredResults();
+}
+
+function renderFilteredResults(filename = "") {
+  const empty = document.getElementById("results-empty");
+  const tableWrap = document.getElementById("table-wrap");
+  const tbody = document.getElementById("results-tbody");
+  const subtitle = document.getElementById("results-subtitle");
+  const filterBar = document.getElementById("filter-bar");
+  const query = (document.getElementById("inp-table-filter")?.value || "").toLowerCase().trim();
+
+  let filtered = _rawResults.slice();
+
+  // Apply search text
+  if (query) {
+    filtered = filtered.filter(item => 
+      (item.title || "").toLowerCase().includes(query) ||
+      (item.company || "").toLowerCase().includes(query) ||
+      (item.location || "").toLowerCase().includes(query) ||
+      (item.reasoning || "").toLowerCase().includes(query)
+    );
+  }
+
+  // Apply score filter
+  if (_scoreFilter === 'high') {
+    filtered = filtered.filter(i => (i.fit_score || 0) >= 70);
+  } else if (_scoreFilter === 'mid') {
+    filtered = filtered.filter(i => (i.fit_score || 0) >= 50);
+  }
+
+  // Apply platform filter
+  if (_platformFilter !== 'all') {
+    filtered = filtered.filter(i => (i.source || "").toLowerCase() === _platformFilter);
+  }
+
+  // Update hero stats
+  document.getElementById("stat-discovered").textContent = _rawResults.length;
+  const topScore = _rawResults.length ? Math.max(..._rawResults.map(r => r.fit_score || 0)) : null;
+  document.getElementById("stat-topscore").textContent = topScore !== null ? `${topScore}/100` : '—';
+
+  if (!filtered.length) {
+    empty.style.display = "block";
+    tableWrap.style.display = "none";
+    filterBar.style.display = _rawResults.length ? "flex" : "none";
+    subtitle.textContent = _rawResults.length ? `No listings match the active filter (${_rawResults.length} total)` : "Ready for discovery";
+    return;
+  }
+
+  empty.style.display = "none";
+  tableWrap.style.display = "block";
+  filterBar.style.display = "flex";
+  tbody.innerHTML = "";
+
+  subtitle.textContent = `Showing ${filtered.length} of ${_rawResults.length} listings sorted by AI match fit ${filename ? '(' + filename + ')' : ''}`;
+
+  filtered.forEach((item, idx) => {
+    const score = item.fit_score ?? 0;
+    let scoreClass = "score-poor";
+    if (score >= 80) scoreClass = "score-high";
+    else if (score >= 65) scoreClass = "score-mid";
+    else if (score >= 45) scoreClass = "score-low";
+
+    const tr = document.createElement("tr");
+    tr.className = "item-row";
+    tr.onclick = () => toggleDetail(idx);
+
+    const sourceName = item.source || "job";
+    const badgeClass = sourceName === "internshala" ? "badge-internshala" : "badge-linkedin";
+
+    tr.innerHTML = `
+      <td style="color:var(--text-muted); font-family:var(--mono); text-align:center;">${idx + 1}</td>
+      <td style="text-align:center;"><span class="score-badge ${scoreClass}">${score}</span></td>
+      <td>
+        <div style="font-weight:700; color:var(--text-primary); display:flex; align-items:center; gap:6px;">
+          ${escHtml(item.company || "—")}
+        </div>
+        <span class="badge ${badgeClass}" style="font-size:10px; padding:2px 8px; margin-top:4px; text-transform:capitalize;">${escHtml(sourceName)}</span>
+      </td>
+      <td>
+        <div style="font-weight:600; color:var(--text-primary); font-size:14px;">${escHtml(item.title || "—")}</div>
+        <div style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">Click to view AI reasoning</div>
+      </td>
+      <td style="color:var(--text-secondary); font-size:13px;">${escHtml(item.location || "Bangalore, India")}</td>
+      <td style="color:var(--text-muted); font-size:12px; font-family:var(--mono);">${escHtml(item.posted_date || "—")}</td>
+      <td style="text-align:right;">
+        <a href="${escHtml(item.url || '#')}" target="_blank" class="btn-apply" onclick="event.stopPropagation()">
+          Apply ↗
+        </a>
+      </td>
+    `;
+    tbody.appendChild(tr);
+
+    // Detail Drawer Row
+    const detailTr = document.createElement("tr");
+    detailTr.id = `detail-${idx}`;
+    detailTr.className = "detail-row";
+    detailTr.style.display = "none";
+
+    const missingTags = (item.missing_skills || []).map(s => 
+      `<span class="tag tag-gap">${escHtml(s)}</span>`
+    ).join("");
+
+    detailTr.innerHTML = `
+      <td colspan="7">
+        <div class="detail-grid">
+          <div class="reasoning-panel">
+            <div style="font-weight:700; color:var(--text-primary); margin-bottom:6px; font-size:12px; text-transform:uppercase; letter-spacing:0.05em;">
+              🧠 AI Fit Assessment & Alignment
+            </div>
+            ${escHtml(item.reasoning || "No detailed fit analysis generated.")}
+          </div>
+          <div class="missing-panel">
+            <div class="panel-title">⚠️ Identified Skill Gaps</div>
+            ${missingTags ? `<div class="tag-cloud" style="margin-top:4px;">${missingTags}</div>` : `<span style="font-size:12px; color:var(--text-secondary);">No critical missing skills detected.</span>`}
+          </div>
+        </div>
+      </td>
+    `;
+    tbody.appendChild(detailTr);
+  });
+}
+
+function toggleDetail(idx) {
+  const row = document.getElementById(`detail-${idx}`);
+  if (row) {
+    row.style.display = row.style.display === "none" ? "table-row" : "none";
+  }
+}
+</script>
+
+</body>
+</html>

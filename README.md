@@ -228,12 +228,129 @@ ai-job-search/
 │   ├── verify_layout.py               # Measure a compiled PDF's page layout (holes, orphans, footer collisions)
 │   ├── verify_pdf.py                  # Verify a compiled PDF's page count and extractable text
 │   └── README_SALARY_TOOL.md          # Salary tool setup instructions
-├── job_scraper/                       # Scraper state (seen jobs, results)
+├── job_scraper/                       # AutoJobApply pipeline
+│   ├── pipeline.py                    # Entry point: scrape → dedup → rank
+│   ├── profile.py                     # Profile ingestion from documents/cv/
+│   ├── dedupe.py                      # Deduplication against seen_jobs.json
+│   ├── rank.py                        # LLM-based job scoring (gpt-oss-20b via NIM)
+│   ├── sources/
+│   │   ├── linkedin.py                # LinkedIn connector (wraps bun CLI)
+│   │   └── linkedin_cli.py            # Standalone LinkedIn CLI runner
+│   ├── lib/
+│   │   ├── llm.py                     # Shared NIM LLM client
+│   │   └── pdf.py                     # PDF text extraction
+│   ├── results/                       # Timestamped ranked output (gitignored)
+│   └── seen_jobs.json                 # Dedup ledger (gitignored, created on first run)
 ├── gmail_sync/                        # /gmail-sync state (processed message IDs, last sync date)
 ├── upskill/                           # /upskill report output (markdown reports per run)
 ├── job_search_tracker.csv             # Application tracking spreadsheet
 └── SETUP.md                           # Detailed setup guide
 ```
+
+## AutoJobApply — automated scrape → rank pipeline
+
+A self-hosted pipeline that fetches LinkedIn job listings, deduplicates them, scores each one against your candidate profile using **gpt-oss-20b via NVIDIA NIM**, and prints a ranked table to the console.
+
+### Prerequisites
+
+1. **Python 3.10+** and dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+2. **NVIDIA NIM API key** — copy `.env.example` to `.env` and fill in `NVIDIA_API_KEY`:
+   ```bash
+   cp .env.example .env
+   # edit .env and set NVIDIA_API_KEY=nvapi-your-key-here
+   ```
+3. **Bun** — required to run the LinkedIn search CLI:
+   ```bash
+   # macOS/Linux:
+   curl -fsSL https://bun.sh/install | bash
+   # Windows PowerShell:
+   powershell -ExecutionPolicy Bypass -c "irm https://bun.sh/install.ps1 | iex"
+   ```
+4. **Your CV** — place at least one `.pdf`, `.tex`, or `.txt` resume file in `documents/cv/` before the first run. The pipeline will fail with a clear error message if this directory is empty.
+
+### Local GUI (no terminal needed)
+
+```bash
+python -m job_scraper.gui
+```
+
+Opens `http://localhost:4000` automatically. From there:
+
+- Pick a seniority filter (or leave blank for neutral scoring), optionally override role/location, set fetch limits
+- Click **Run scrape** — a live log updates every 1.5 s while the pipeline runs
+- Results appear in a ranked table (score colour-coded green/amber/red) once done
+- Reasoning column is truncated by default; click any row to expand it
+- The page loads the most recent previous run's results on startup, so you can review them even without running again
+
+To use a different port: `python -m job_scraper.gui --port 5000`
+To start without opening a browser: `python -m job_scraper.gui --no-browser`
+
+### Running the pipeline
+
+```bash
+# Basic run — derives role and location from your profile automatically
+python -m job_scraper.pipeline
+
+# Filter by seniority (junior | mid | senior | lead | principal)
+python -m job_scraper.pipeline --seniority senior
+
+# Override the search query
+python -m job_scraper.pipeline --role "ML Engineer" --location "Bangalore, Karnataka, India"
+
+# Fetch only the last 7 days of postings, cap at 10 results
+python -m job_scraper.pipeline --jobage 7 --limit 10
+
+# Fetch and dedup but skip the LLM ranking call (useful for testing connectivity)
+python -m job_scraper.pipeline --dry-run
+
+# Full example
+python -m job_scraper.pipeline --seniority senior --jobage 14 --limit 20
+```
+
+### What the pipeline does on each run
+
+| Step | Module | What happens |
+|------|--------|-------------|
+| 1. Profile | `job_scraper/profile.py` | Reads `documents/cv/` (and `documents/linkedin/` if present), calls NIM once to extract a structured profile, caches it to `job_scraper/profile.json`. On subsequent runs, the LLM call is skipped if no document has changed. |
+| 2. Fetch | `job_scraper/sources/linkedin.py` | Calls the Bun CLI at `.agents/skills/linkedin-search/cli/` as a subprocess and returns normalised listings. |
+
+> [!NOTE]
+> **LinkedIn Connector Notice**: The LinkedIn search connector (`job_scraper/sources/linkedin.py` invoking `.agents/skills/linkedin-search`) uses LinkedIn's unauthenticated `jobs-guest` public endpoints. It requires no LinkedIn credentials or API keys. It is intended strictly for **personal use only** and should be run at **low volume** to comply with LinkedIn Terms of Service and avoid IP rate-limiting.
+
+| 3. Dedup | `job_scraper/dedupe.py` | Drops listings already in `job_scraper/seen_jobs.json` (by ID) and within-batch duplicates (by normalised company + title). New listings are written to the ledger immediately so they're excluded on the next run. |
+| 4. Rank | `job_scraper/rank.py` | Groups listings into batches of 5, scores each batch in one LLM call, retries once on malformed JSON. Results are saved to `job_scraper/results/<timestamp>.json`. |
+| 5. Print | `job_scraper/pipeline.py` | Renders a sorted fit table (best score first) to the console. |
+
+### Key files
+
+| File | Description |
+|------|-------------|
+| `job_scraper/profile.json` | Cached candidate profile (auto-generated, gitignored) |
+| `job_scraper/seen_jobs.json` | Dedup ledger — tracks every listing ever seen (auto-generated, gitignored) |
+| `job_scraper/results/<ts>.json` | Full ranked output per run (gitignored) |
+| `documents/cv/` | **Required** — put your CV here before the first run |
+| `documents/linkedin/` | Optional — LinkedIn PDF export enriches the profile |
+| `.env` | Your `NVIDIA_API_KEY` (never committed) |
+
+### Console output
+
+```
+────────────────────────────────────────────────────────────────────────────────
+  8 new job(s) found  [seniority filter: senior]
+────────────────────────────────────────────────────────────────────────────────
+
+#    Score Company                Title                              Posted     URL
+---- ----- ---------------------- ---------------------------------- ---------- ---
+1       87 Stripe                 Senior Data Engineer               2025-01-14 https://www.linkedin.com/jobs/view/...
+2       81 Razorpay               Staff ML Engineer                  2025-01-13 https://www.linkedin.com/jobs/view/...
+3       74 PhonePe                Senior Analytics Engineer          2025-01-15 https://www.linkedin.com/jobs/view/...
+...
+```
+
+---
 
 ## How `/apply` works
 

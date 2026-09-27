@@ -1,0 +1,8 @@
+{
+  "name": "autojobapply",
+  "version": "1.0.0",
+  "description": "AutoJobApply - AI job search & fit ranker",
+  "scripts": {
+    "gui": "python -m job_scraper.gui"
+  }
+}
