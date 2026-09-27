@@ -144,14 +144,28 @@ def _parse_llm_response(response: str) -> dict:
         lines = text.splitlines()
         # Drop opening fence (```json or ```) and closing fence (```)
         inner = [l for l in lines if not l.strip().startswith("```")]
-        text = "\n".join(inner)
+        text = "\n".join(inner).strip()
+
+    # Extract JSON between outermost braces if present
+    start = text.find("{")
+    end = text.rfind("}")
+    candidate = text[start:end+1] if (start != -1 and end != -1 and end > start) else text
 
     try:
-        data = json.loads(text)
-    except json.JSONDecodeError as exc:
-        raise ProfileParseError(
-            f"LLM response is not valid JSON: {exc}\n\nRaw response:\n{response[:500]}"
-        ) from exc
+        data = json.loads(candidate)
+    except json.JSONDecodeError:
+        # Attempt repair for truncated LLM responses (e.g. cut off summary string)
+        repaired = candidate.strip()
+        if repaired.count('"') % 2 != 0:
+            repaired += '"'
+        if not repaired.endswith("}"):
+            repaired += "}"
+        try:
+            data = json.loads(repaired)
+        except json.JSONDecodeError as exc:
+            raise ProfileParseError(
+                f"LLM response is not valid JSON: {exc}\n\nRaw response:\n{response[:500]}"
+            ) from exc
 
     if not isinstance(data, dict):
         raise ProfileParseError(
@@ -272,7 +286,7 @@ def load_profile(
             {"role": "user", "content": prompt},
         ],
         temperature=0.0,
-        max_tokens=1024,
+        max_tokens=2048,
     )
 
     profile = _parse_llm_response(response)
