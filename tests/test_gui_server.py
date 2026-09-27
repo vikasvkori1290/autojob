@@ -277,6 +277,36 @@ class TestServerEndpoints(unittest.TestCase):
                 self.assertEqual(r.json()["profile"]["skills"], ["Python", "FastAPI"])
                 self.assertTrue((cv_dir / "resume.txt").is_file())
 
+    def test_reset_all(self):
+        with tempfile.TemporaryDirectory() as d:
+            seen_p = Path(d) / "seen_jobs.json"
+            res_dir = Path(d) / "results"
+            res_dir.mkdir()
+            (res_dir / "test.json").write_text("{}", encoding="utf-8")
+            prof_p = Path(d) / "profile.json"
+            prof_p.write_text("{}", encoding="utf-8")
+            cv_dir = Path(d) / "cv"
+            cv_dir.mkdir()
+            (cv_dir / "my_cv.pdf").write_text("dummy", encoding="utf-8")
+            (cv_dir / ".gitkeep").write_text("", encoding="utf-8")
+
+            with patch("job_scraper.gui.server._SEEN_PATH", seen_p), \
+                 patch("job_scraper.gui.server._RESULTS_DIR", res_dir), \
+                 patch("job_scraper.gui.server._PROFILE_PATH", prof_p), \
+                 patch("job_scraper.gui.server._DOCUMENTS_CV", cv_dir), \
+                 patch("job_scraper.gui.server._update_env_file"), \
+                 patch("job_scraper.gui.server.reset_client"):
+                r = client.post("/api/reset-all")
+                self.assertEqual(r.status_code, 200)
+                self.assertEqual(r.json()["status"], "ok")
+                self.assertTrue(seen_p.is_file())
+                self.assertIn('"seen": {}', seen_p.read_text())
+                self.assertFalse((res_dir / "test.json").exists())
+                self.assertFalse(prof_p.exists())
+                self.assertFalse((cv_dir / "my_cv.pdf").exists())
+                self.assertTrue((cv_dir / ".gitkeep").exists())
+
 
 if __name__ == "__main__":
     unittest.main()
+

@@ -488,6 +488,64 @@ def reset_seen():
         raise HTTPException(status_code=500, detail=str(exc))
 
 
+@app.post("/api/reset-all")
+def reset_all_data():
+    """Complete factory reset: seen jobs, search results, resumes, profile, and API keys."""
+    # 1. Clear seen jobs ledger
+    try:
+        _SEEN_PATH.parent.mkdir(parents=True, exist_ok=True)
+        _SEEN_PATH.write_text('{\n  "seen": {}\n}\n', encoding="utf-8")
+    except Exception:
+        pass
+
+    # 2. Delete all saved scrape results
+    try:
+        if _RESULTS_DIR.is_dir():
+            for f in _RESULTS_DIR.glob("*.json"):
+                try:
+                    f.unlink()
+                except Exception:
+                    pass
+    except Exception:
+        pass
+
+    # 3. Reset in-memory run state
+    _STATE.reset("", None)
+
+    # 4. Remove active candidate profile
+    try:
+        if _PROFILE_PATH.is_file():
+            _PROFILE_PATH.unlink()
+    except Exception:
+        pass
+
+    # 5. Remove all uploaded CVs in documents/cv
+    try:
+        if _DOCUMENTS_CV.is_dir():
+            for cv_file in _DOCUMENTS_CV.iterdir():
+                if cv_file.is_file() and not cv_file.name.startswith("."):
+                    try:
+                        cv_file.unlink()
+                    except Exception:
+                        pass
+    except Exception:
+        pass
+
+    # 6. Clear API keys from environment, .env file, and reset client
+    os.environ.pop("NVIDIA_API_KEY", None)
+    os.environ.pop("GEMINI_API_KEY", None)
+    _update_env_file("NVIDIA_API_KEY", "")
+    reset_client()
+
+    # 7. Restore default rubric configuration
+    save_rubric_config(DEFAULT_CONFIG)
+
+    return {
+        "status": "ok",
+        "message": "All data, resumes, seen jobs, results, and API keys have been reset.",
+    }
+
+
 
 # ---------------------------------------------------------------------------
 # Server CLI entry point

@@ -350,6 +350,30 @@
     transform: translateY(-1px);
   }
 
+  /* ── Reset All Button ─────────────────────────────────────── */
+  .btn-reset-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    background: var(--surface-elevated);
+    border: 1px solid var(--border-glass);
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+  }
+
+  .btn-reset-all:hover {
+    background: rgba(244, 63, 94, 0.12);
+    border-color: rgba(244, 63, 94, 0.4);
+    color: #f43f5e;
+    transform: translateY(-1px);
+  }
+
+
   /* ── Stats Hero Grid ─────────────────────────────────────────── */
   .stats-hero {
     display: grid;
@@ -1102,6 +1126,10 @@
         <span id="theme-icon">🌙</span>
         <span id="theme-text">Dark Mode</span>
       </button>
+      <button id="btn-reset-all" class="btn-reset-all" onclick="confirmResetAll()" title="Reset all: jobs seen, resume, results, and API keys">
+        <span>🔄</span>
+        <span>Reset All</span>
+      </button>
     </div>
   </header>
 
@@ -1848,6 +1876,89 @@ async function reparseProfile() {
 }
 
 // ── 3. Pipeline Scraping & Results ──────────────────────────────────────────
+async function confirmResetAll() {
+  const ok = confirm(
+    "⚠️ ARE YOU SURE YOU WANT TO RESET EVERYTHING?\n\n" +
+    "This will permanently wipe:\n" +
+    "• All seen jobs ledger & history\n" +
+    "• All saved scrape & fit ranker results\n" +
+    "• All uploaded resumes and candidate profile\n" +
+    "• Your saved NVIDIA API key (from server and browser)\n" +
+    "• Custom rubric filters (restores defaults)\n\n" +
+    "Click OK to proceed with full reset."
+  );
+  if (!ok) return;
+
+  const btn = document.getElementById("btn-reset-all");
+  const origHtml = btn ? btn.innerHTML : "";
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = "<span>⏳</span><span>Resetting…</span>";
+  }
+
+  try {
+    await fetchJSON("/api/reset-all", { method: "POST" });
+
+    try {
+      localStorage.removeItem("autojobapply_nvidia_key");
+    } catch (_) {}
+
+    // Reset UI Counters & Badges
+    const badgeSeen = document.getElementById("badge-seen");
+    if (badgeSeen) {
+      badgeSeen.innerHTML = `<span class="status-dot" style="background:#64748b;"></span>0 jobs seen`;
+    }
+    const badgeKey = document.getElementById("badge-key");
+    if (badgeKey) {
+      badgeKey.className = "badge badge-amber";
+      badgeKey.innerHTML = `<span class="status-dot"></span>NVIDIA NIM: Not Set`;
+    }
+    const statDiscovered = document.getElementById("stat-discovered");
+    if (statDiscovered) statDiscovered.textContent = "0";
+    const statTop = document.getElementById("stat-topscore");
+    if (statTop) statTop.textContent = "—";
+    const statSkills = document.getElementById("stat-profile-skills");
+    if (statSkills) statSkills.textContent = "0 Skills";
+
+    // Clear candidate profile section
+    const profDisplay = document.getElementById("profile-display");
+    if (profDisplay) profDisplay.style.display = "none";
+    const profUploadMsg = document.getElementById("profile-upload-msg");
+    if (profUploadMsg) {
+      profUploadMsg.className = "feedback";
+      profUploadMsg.style.display = "none";
+      profUploadMsg.textContent = "";
+    }
+    const sumMeta = document.getElementById("summary-meta");
+    if (sumMeta) sumMeta.textContent = "No profile uploaded yet";
+
+    // Clear results table
+    _rawResults = [];
+    const tbody = document.getElementById("results-tbody");
+    if (tbody) tbody.innerHTML = "";
+    const emptyState = document.getElementById("results-empty");
+    if (emptyState) emptyState.style.display = "flex";
+    const tableWrap = document.getElementById("results-table-wrap");
+    if (tableWrap) tableWrap.style.display = "none";
+    const filterBar = document.getElementById("results-filter-bar");
+    if (filterBar) filterBar.style.display = "none";
+    const resSub = document.getElementById("results-subtitle");
+    if (resSub) resSub.textContent = "Scrape & evaluate jobs above to see AI match rankings";
+
+    // Reload settings & refresh inputs
+    await loadSettings();
+
+    alert("✅ Reset Complete!\n\nAll jobs seen, resumes, candidate profile, results, and API keys have been wiped.");
+  } catch (err) {
+    alert("❌ Reset failed: " + err.message);
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = origHtml;
+    }
+  }
+}
+
 async function loadSeenCount() {
   try {
     const res = await fetchJSON("/api/seen-count");
