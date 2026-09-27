@@ -392,17 +392,27 @@ async def upload_resume(file: UploadFile = File(...)):
         except UnicodeDecodeError:
             raise HTTPException(status_code=400, detail="Invalid text file: content must be UTF-8")
 
-    # Save to documents/cv/
+    # Clear out any previous resumes so only the uploaded one remains
     _DOCUMENTS_CV.mkdir(parents=True, exist_ok=True)
+    for old_file in _DOCUMENTS_CV.iterdir():
+        if old_file.is_file() and not old_file.name.startswith("."):
+            try:
+                old_file.unlink()
+            except Exception:
+                pass
+
     target_path = _DOCUMENTS_CV / filename
     target_path.write_bytes(content)
 
     # Invalidate profile cache so load_profile re-parses
     if _PROFILE_PATH.is_file():
-        _PROFILE_PATH.unlink()
+        try:
+            _PROFILE_PATH.unlink()
+        except Exception:
+            pass
 
     try:
-        profile = load_profile()
+        profile = load_profile(specific_file=target_path)
         return {"status": "ok", "filename": filename, "profile": profile}
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Profile extraction error: {exc}")

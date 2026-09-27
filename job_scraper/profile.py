@@ -216,12 +216,12 @@ def _write_atomic(path: Path, data: dict) -> None:
 def discover_sources(
     cv_dir: Path | None = None,
     linkedin_dir: Path | None = None,
+    specific_file: Path | None = None,
 ) -> tuple[list[Path], list[Path]]:
-    """Return (cv_sources, linkedin_sources).
+    """Return (cv_sources, linkedin_sources). Strictly selects only the single active CV."""
+    if specific_file is not None and Path(specific_file).is_file():
+        return [Path(specific_file)], []
 
-    Raises:
-        ProfileSourceError: If no supported files are found under *cv_dir*.
-    """
     cv_dir = Path(cv_dir) if cv_dir is not None else _DEFAULT_CV_DIR
     linkedin_dir = Path(linkedin_dir) if linkedin_dir is not None else _DEFAULT_LINKEDIN_DIR
 
@@ -234,13 +234,16 @@ def discover_sources(
             "Add your resume as a .pdf, .tex, or .txt file under documents/cv/ and re-run."
         )
 
-    return cv_sources, linkedin_sources
+    # Strictly parse ONLY the single latest uploaded resume file
+    latest_cv = max(cv_sources, key=lambda p: p.stat().st_mtime)
+    return [latest_cv], linkedin_sources
 
 
 def load_profile(
     cv_dir: Path | None = None,
     linkedin_dir: Path | None = None,
     output_path: Path | None = None,
+    specific_file: Path | None = None,
 ) -> dict:
     """Load (or build) the structured candidate profile.
 
@@ -252,6 +255,7 @@ def load_profile(
         cv_dir:      Override for documents/cv/. Defaults to repo-relative path.
         linkedin_dir: Override for documents/linkedin/. Defaults to repo-relative path.
         output_path: Override for job_scraper/profile.json.
+        specific_file: Explicit path to the single uploaded CV file.
 
     Returns:
         A dict with keys: skills, years_experience, titles_held, industries,
@@ -264,7 +268,7 @@ def load_profile(
     """
     output_path = Path(output_path) if output_path is not None else _DEFAULT_OUTPUT
 
-    cv_sources, linkedin_sources = discover_sources(cv_dir, linkedin_dir)
+    cv_sources, linkedin_sources = discover_sources(cv_dir, linkedin_dir, specific_file=specific_file)
     all_sources = cv_sources + linkedin_sources
 
     if is_cache_fresh(output_path, all_sources):
