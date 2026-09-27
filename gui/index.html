@@ -10,7 +10,7 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  /* ── 1. DARK THEME VARIABLES (Default) ────────────────────────── */
+  /* ── 1. DARK THEME VARIABLES ──────────────────────────────────── */
   :root, [data-theme="dark"] {
     --bg-dark: #0f1013;
     --bg-image: 
@@ -85,7 +85,7 @@
     --score-poor-border: rgba(244, 63, 94, 0.4);
   }
 
-  /* ── 2. LIGHT THEME OVERRIDES (Mustard Yellow) ───────────────── */
+  /* ── 2. LIGHT THEME OVERRIDES (Mustard Yellow Accent) ───────── */
   [data-theme="light"] {
     --bg-dark: #fafaf9;
     --bg-image: 
@@ -552,7 +552,7 @@
   .field select {
     cursor: pointer;
     appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2378716c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 14px center;
     padding-right: 38px;
@@ -614,25 +614,29 @@
     transform: translateY(-1px);
   }
 
+  /* ── Sleek Action Buttons ────────────────────────────────────── */
   .btn-apply {
     background: var(--btn-primary-bg);
     color: var(--btn-primary-text);
     font-size: 12px;
-    font-weight: 800;
+    font-weight: 700;
     padding: 6px 14px;
     border-radius: var(--radius-sm);
     text-decoration: none;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    box-shadow: 0 2px 10px var(--primary-glow);
-    transition: all 0.2s;
+    justify-content: center;
+    gap: 4px;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px var(--primary-glow);
+    transition: all 0.2s ease;
+    line-height: 1.2;
   }
 
   .btn-apply:hover {
     background: var(--btn-hover-bg);
     transform: translateY(-1px);
-    box-shadow: 0 4px 14px var(--primary-glow);
+    box-shadow: 0 4px 12px var(--primary-glow);
   }
 
   /* ── Interactive Results Filter Bar ──────────────────────────── */
@@ -965,6 +969,89 @@
     color: var(--red-text);
   }
 
+  /* ── Documentation Styles ────────────────────────────────────── */
+  .docs-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .docs-step-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px 20px;
+    background: var(--surface-elevated);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md);
+  }
+  .step-badge {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .step-title {
+    font-size: 14.5px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 3px;
+  }
+  .step-text {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.55;
+  }
+  .docs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+  }
+  .docs-info-box {
+    background: var(--surface-elevated);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    padding: 18px 20px;
+  }
+  .box-icon {
+    font-size: 26px;
+    margin-bottom: 8px;
+  }
+  .box-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+  .box-text {
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    line-height: 1.55;
+  }
+  .faq-item {
+    background: var(--surface-elevated);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    padding: 16px 20px;
+  }
+  .faq-q {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+  .faq-a {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
   /* ── Feedback Banners ────────────────────────────────────────── */
   .feedback {
     padding: 12px 18px;
@@ -1061,6 +1148,9 @@
     <button id="tab-btn-settings" class="tab-btn" onclick="switchTab('settings')">
       ⚙️ Rubric & AI Model Settings
     </button>
+    <button id="tab-btn-docs" class="tab-btn" onclick="switchTab('docs')">
+      📖 Documentation & Guide
+    </button>
   </nav>
 
   <!-- ═══════════════════════════════════════════════════════════ -->
@@ -1144,7 +1234,7 @@
         </div>
       </div>
 
-      <!-- Quick Filter Bar -->
+      <!-- Quick Filter Bar (Appears only when > 50 jobs are loaded) -->
       <div id="filter-bar" class="filter-bar" style="display:none;">
         <input type="text" id="inp-table-filter" class="search-filter-input" placeholder="🔍 Quick filter by company, title, skill..." oninput="handleTableFilter()">
         <div class="quick-filters">
@@ -1175,7 +1265,7 @@
               <th>Position Title</th>
               <th style="width: 170px;">Location</th>
               <th style="width: 110px;">Posted</th>
-              <th style="width: 100px; text-align: right;">Action</th>
+              <th style="width: 100px; text-align: center;">Action</th>
             </tr>
           </thead>
           <tbody id="results-tbody"></tbody>
@@ -1320,6 +1410,156 @@
         💾 Save Rubric Configuration
       </button>
       <div id="rubric-feedback" class="feedback"></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- TAB 4: DOCUMENTATION & GUIDE -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <section id="tab-docs" class="panel">
+    <!-- NVIDIA API Key Guide -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">🔑 How to Generate Your Free NVIDIA NIM API Key</div>
+          <div class="card-desc">NVIDIA provides 1,000 free credits for Llama 3.2 and Meta models — zero GPU setup required</div>
+        </div>
+        <span class="badge badge-green"><span class="status-dot"></span>1,000 Free Credits</span>
+      </div>
+
+      <div class="docs-steps">
+        <div class="docs-step-card">
+          <div class="step-badge">1</div>
+          <div class="step-content">
+            <div class="step-title">Visit the NVIDIA Model Catalog</div>
+            <p class="step-text">Open <a href="https://build.nvidia.com/" target="_blank" style="color:var(--primary); font-weight:700; text-decoration:underline;">build.nvidia.com</a> in your browser.</p>
+          </div>
+        </div>
+
+        <div class="docs-step-card">
+          <div class="step-badge">2</div>
+          <div class="step-content">
+            <div class="step-title">Sign In or Create a Free Account</div>
+            <p class="step-text">Click <strong>Sign In</strong> at the top right. You can sign in using your existing Google, GitHub account, or register a free NVIDIA developer profile.</p>
+          </div>
+        </div>
+
+        <div class="docs-step-card">
+          <div class="step-badge">3</div>
+          <div class="step-content">
+            <div class="step-title">Select Meta Llama 3.2 Model</div>
+            <p class="step-text">Search for or click on <code>meta/llama-3.2-11b-vision-instruct</code> (or <code>meta/llama3-70b-instruct</code>).</p>
+          </div>
+        </div>
+
+        <div class="docs-step-card">
+          <div class="step-badge">4</div>
+          <div class="step-content">
+            <div class="step-title">Generate Your API Key</div>
+            <p class="step-text">On the model detail page, click the green <strong>"Get API Key"</strong> button. Generate and copy your secret key starting with <code>nvapi-...</code>.</p>
+          </div>
+        </div>
+
+        <div class="docs-step-card">
+          <div class="step-badge">5</div>
+          <div class="step-content">
+            <div class="step-title">Save in Dashboard Settings</div>
+            <p class="step-text">Switch to the <strong>Rubric & AI Model Settings</strong> tab above, paste your key into the NVIDIA API Key field, and click <strong>Validate & Save</strong>. It will be stored safely in your local <code>.env</code> file (git-ignored).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- How AutoJobApply Works -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">⚙️ How AutoJobApply Works: Architecture & Pipeline</div>
+          <div class="card-desc">Local agentic discovery, full description enrichment, and intelligent candidate fit ranking</div>
+        </div>
+      </div>
+
+      <div class="docs-grid">
+        <div class="docs-info-box">
+          <div class="box-icon">🌐</div>
+          <div class="box-title">1. Multi-Platform Scraping</div>
+          <p class="box-text">
+            Discovers vacancies across <strong>Internshala</strong> (freshers, junior developer vacancies across India) and <strong>LinkedIn</strong> (global job search endpoint) matching your target role and location.
+          </p>
+        </div>
+
+        <div class="docs-info-box">
+          <div class="box-icon">📑</div>
+          <div class="box-title">2. Detail Scraping & Enrichment</div>
+          <p class="box-text">
+            For every job card discovered, AutoJobApply fetches the live detail page to extract the full description, required technical stack, and responsibilities.
+          </p>
+        </div>
+
+        <div class="docs-info-box">
+          <div class="box-icon">🛡️</div>
+          <div class="box-title">3. Deduplication Registry</div>
+          <p class="box-text">
+            Maintains a persistent ledger (<code>seen_jobs.json</code>). You never waste AI tokens re-evaluating or re-reading positions you already examined.
+          </p>
+        </div>
+
+        <div class="docs-info-box">
+          <div class="box-icon">👤</div>
+          <div class="box-title">4. Candidate Profiling</div>
+          <p class="box-text">
+            Extracts your skills, seniority level, and previous roles from your resume in <code>documents/cv/</code> into a structured JSON benchmark (<code>profile.json</code>).
+          </p>
+        </div>
+
+        <div class="docs-info-box">
+          <div class="box-icon">🧠</div>
+          <div class="box-title">5. NVIDIA NIM Fit Scoring</div>
+          <p class="box-text">
+            Llama 3.2 grades each role from <strong>0 to 100</strong>, strictly enforcing hard deal-breakers (e.g. compensation, language), applying score boosts, and identifying exact skill gaps.
+          </p>
+        </div>
+
+        <div class="docs-info-box">
+          <div class="box-icon">🎯</div>
+          <div class="box-title">6. Human-in-the-Loop Apply</div>
+          <p class="box-text">
+            Automated bot application submissions are dangerous and lead to portal blacklists. AutoJobApply sorts jobs by match score and lets you review AI reasoning before manually applying in 1 click.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Platform FAQ & Guidelines -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">💡 Platform Coverage & FAQs</div>
+          <div class="card-desc">Understanding platform differences, bot protection, and tips for best results</div>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div class="faq-item">
+          <div class="faq-q">Why Internshala alongside LinkedIn?</div>
+          <div class="faq-a">Internshala provides fast, server-side rendered listings with 0 captchas and direct access to hundreds of active junior and fresher full-stack developer roles in India and Remote.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q">What about Naukri?</div>
+          <div class="faq-a">Naukri protects its web search endpoints with Akamai/Cloudflare bot shielding (<code>HTTP 406: recaptcha required</code>). Direct HTTP requests get blocked unless authenticated with active browser session cookies. Internshala and LinkedIn provide unblocked public access.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q">Is my personal data or API key safe?</div>
+          <div class="faq-a">Yes! Everything runs 100% locally on your machine. Your API key is stored in <code>.env</code> and your resume is stored in <code>documents/cv/</code>—both are strictly git-ignored and never shared.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q">How do I customize the ranking rules?</div>
+          <div class="faq-a">Go to the <strong>Rubric & AI Model Settings</strong> tab to edit hard deal-breakers (lines that trigger a 0 score) and score bonuses (e.g. +5 for remote-first or AI companies).</div>
+        </div>
+      </div>
     </div>
   </section>
 </div>
@@ -1736,17 +1976,20 @@ function renderFilteredResults(filename = "") {
   const topScore = _rawResults.length ? Math.max(..._rawResults.map(r => r.fit_score || 0)) : null;
   document.getElementById("stat-topscore").textContent = topScore !== null ? `${topScore}/100` : '—';
 
+  // Only show quick filter bar if there are strictly more than 50 jobs
+  const shouldShowFilterBar = _rawResults.length > 50;
+
   if (!filtered.length) {
     empty.style.display = "block";
     tableWrap.style.display = "none";
-    filterBar.style.display = _rawResults.length ? "flex" : "none";
+    filterBar.style.display = shouldShowFilterBar ? "flex" : "none";
     subtitle.textContent = _rawResults.length ? `No listings match the active filter (${_rawResults.length} total)` : "Ready for discovery";
     return;
   }
 
   empty.style.display = "none";
   tableWrap.style.display = "block";
-  filterBar.style.display = "flex";
+  filterBar.style.display = shouldShowFilterBar ? "flex" : "none";
   tbody.innerHTML = "";
 
   subtitle.textContent = `Showing ${filtered.length} of ${_rawResults.length} listings sorted by AI match fit ${filename ? '(' + filename + ')' : ''}`;
@@ -1780,10 +2023,8 @@ function renderFilteredResults(filename = "") {
       </td>
       <td style="color:var(--text-secondary); font-size:13px;">${escHtml(item.location || "Bangalore, India")}</td>
       <td style="color:var(--text-muted); font-size:12px; font-family:var(--mono);">${escHtml(item.posted_date || "—")}</td>
-      <td style="text-align:right;">
-        <a href="${escHtml(item.url || '#')}" target="_blank" class="btn-apply" onclick="event.stopPropagation()">
-          Apply ↗
-        </a>
+      <td style="text-align:center; width:100px;">
+        <a href="${escHtml(item.url || '#')}" target="_blank" class="btn-apply" onclick="event.stopPropagation()">Apply ↗</a>
       </td>
     `;
     tbody.appendChild(tr);
